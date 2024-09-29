@@ -2,9 +2,9 @@ name: Push JSON to Lokalise
 
 on:
   push:
-  workflow_dispatcher:
     paths:
       - 'path/to/your/file.json'  # Modify this path to your JSON file
+  workflow_dispatch:  # Enables manual trigger of the workflow
 
 jobs:
   push-to-lokalise:
