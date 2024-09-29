@@ -39,8 +39,8 @@ jobs:
           fi
 
           # Send the POST request to upload the file
-          curl -v -X POST "https://api.lokalise.com/api2/projects/${{ env.LOKALISE_PROJECT_ID }}/files/upload" \
-             -H "X-Api-Token: ${{ env.LOKALISE_API_TOKEN }}" \
+          curl -v -X POST "https://api.lokalise.com/api2/projects/8924818166f90cfed9af35.66887635/files/upload" \
+             -H "X-Api-Token: 919873230a09f13d63d67ab49874325072977cf9" \
              -F "file=@en.json" \
              -F 'data={"convert_placeholders": false, "replace_modified": true, "tags": ["auto-updated"]}'
           
