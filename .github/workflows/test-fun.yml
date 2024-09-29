@@ -18,7 +18,7 @@ jobs:
       run: |
         sudo apt-get install -y curl jq
 
-    - name: Push JSON to Lokalise
+    - name: Encode JSON file to Base64 and Push to Lokalise
       run: |
         # Specify your .json file path
         JSON_FILE_PATH='en.json' # Modify this to match your JSON file path
@@ -27,12 +27,22 @@ jobs:
         LOKALISE_API_TOKEN='919873230a09f13d63d67ab49874325072977cf9' # Replace with your actual Lokalise API Token
         LOKALISE_PROJECT_ID='8924818166f90cfed9af35.66887635' # Replace with your actual Lokalise Project ID
 
+        # Base64 encode the content of the JSON file
+        BASE64_DATA=$(base64 -w 0 $JSON_FILE_PATH)
+
+        # Create JSON payload
+        JSON_PAYLOAD=$(jq -n \
+          --arg data "$BASE64_DATA" \
+          --arg filename "en.json" \
+          --arg lang_iso "en" \
+          '{data: $data, filename: $filename, lang_iso: $lang_iso}')
+
         # Use Lokalise API to upload the file and overwrite existing data
         curl -X POST \
-          -H "Content-Type: multipart/form-data" \
           -H "X-Api-Token: $LOKALISE_API_TOKEN" \
-          -F "file=@$JSON_FILE_PATH" \
-          -F "data={\"project_id\": \"$LOKALISE_PROJECT_ID\", \"replace\": true, \"langs\": [\"en\"]};type=application/json" \
+          -H "accept: application/json" \
+          -H "content-type: application/json" \
+          --data "$JSON_PAYLOAD" \
           https://api.lokalise.com/api2/projects/$LOKALISE_PROJECT_ID/files/upload
 
         echo "File uploaded successfully to Lokalise!"
