@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - en.json  # Trigger when this file is updated
+      - "en.json"  # Trigger when this file is updated
     branches:
       - main  # Only trigger on changes to the main branch
 
@@ -16,7 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Check API Token and Project ID
+      - name: Validate API Token and Project ID
         run: |
           if [ -z "${{ secrets.API_TOKEN }}" ]; then
             echo "Error: API Token is not set."
@@ -26,11 +26,8 @@ jobs:
             echo "Error: Project ID is not set."
             exit 1
           fi
-          
+
       - name: Push JSON file to Lokalise
-        env:
-          LOKALISE_API_TOKEN: ${{ secrets.LOKALISE_API_TOKEN }}  # Use secrets for API Token
-          LOKALISE_PROJECT_ID: ${{ secrets.LOKALISE_PROJECT_ID }}  # Use secrets for Project ID
         run: |
           # Check if the file exists
           if [ ! -f "en.json" ]; then
@@ -39,14 +36,15 @@ jobs:
           fi
 
           # Send the POST request to upload the file
-          curl -v -X POST "https://api.lokalise.com/api2/projects/${{ LOKALISE_PROJECT_ID }}/files/upload" \
-             -H "X-Api-Token: ${{ LOKALISE_API_TOKEN }}" \
-             -F "file=@en.json" \
-             -F 'data={"convert_placeholders": false, "replace_modified": true, "tags": ["auto-updated"]}'
+          response=$(curl -s -o response.json -w "%{http_code}" -X POST "https://api.lokalise.com/api2/projects/${{ secrets.PROJECT_ID }}/files/upload" \
+            -H "X-Api-Token: ${{ secrets.API_TOKEN }}" \
+            -F "file=@en.json" \
+            -F 'data={"convert_placeholders": false, "replace_modified": true, "tags": ["auto-updated"]}')
           
-          # Check if the curl command was successful
-          if [[ $? -ne 0 ]]; then
-            echo "Error: Failed to upload en.json to Lokalise!"
+          # Check the response code
+          if [[ "$response" -ne 200 ]]; then
+            echo "Error: Failed to upload en.json to Lokalise! Response code: $response"
+            cat response.json  # Output the response for debugging
             exit 1
           fi
           echo "Successfully uploaded en.json to Lokalise!"
