@@ -3,7 +3,7 @@ name: Push JSON to Lokalise
 on:
   push:
     paths:
-      - 'giacven/test-fun/en.json'  # Modify this path to your JSON file
+      - '/en.json'  # Modify this path to your JSON file
   workflow_dispatch:  # Enables manual trigger of the workflow
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
     - name: Push JSON to Lokalise
       run: |
         # Specify your .json file path
-        JSON_FILE_PATH='giacven/test-fun/en.json' # Modify this to match your JSON file path
+        JSON_FILE_PATH='/en.json' # Modify this to match your JSON file path
 
         # Use your Lokalise API Token and Project ID here
         LOKALISE_API_TOKEN='919873230a09f13d63d67ab49874325072977cf9' # Replace with your actual Lokalise API Token
