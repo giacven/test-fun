@@ -3,7 +3,7 @@ name: Push JSON to Lokalise
 on:
   push:
     paths:
-      - 'path/to/your/file.json'  # Modify this path to your JSON file
+      - 'giacven/test-fun/en.json'  # Modify this path to your JSON file
   workflow_dispatch:  # Enables manual trigger of the workflow
 
 jobs:
