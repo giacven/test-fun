@@ -1,48 +1,31 @@
 name: Push JSON to Lokalise
 
 on:
-  workflow_dispatch:
   push:
     paths:
-      - en.json  # Trigger when this file is updated
-    branches:
-      - main  # Only trigger on changes to the main branch
+      - '**/*.json'  # Trigger on any changes to JSON files
 
 jobs:
   push-to-lokalise:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'  # Specify the Node.js version
+
+      - name: Install Lokalise CLI
+        run: |
+          npm install -g lokalise-cli
 
       - name: Push JSON file to Lokalise
         run: |
-          # Define the data directly as a JSON string
-          DATA='ewogICJhcHAuY2FydCI6ICJBZGQgdG8gY2FydCIsCiAgImFwcC5kZXNjcmliZSI6ICJUaGUgYmVzdCBwbGFjZSB0b2wgZGlzY29zZW50IHdvbmRlcmZ1bCBob3VzaWhvbGQgZnVybml0dXJlIHRvIG1ha2UgeW91ciBob21lIGJlYXV0aWZ1bCIuCiAgImFwcC5nZXRfc3RhcnRlZCI6ICJHZXQgU3RhcnRlZCIsCiAgImFwcC5ncmVldGluZyI6ICJXZWxjb21lIGJhY2siLAogICJhcHAuaGVhZGVyIjogIk1BS0UgeU9VUiBIS0xFQSBCRUFVVElGVUwiLAogICJhcHAuaGVhZGxpbmUiOiAiTUFLRSBZT1VSIEhPTUUgQkVBVVRJRlVMIiwKICAiYXBwLnByb2R1Y3QuZGVzY3JpcHRpb24iOiAiVGhpcyBzdGFuZCBpcyBtYWRlIG9mIG5hdHVyYWwgd29vZC4gVGhlIGRlc2lnbiBpcyB2ZXJ5IHNpbXBsZSBhbmQgbWluaW1hbC4gVGhpcyBpcyB0cnVseSBvbmUgb2YgdGhlIGJlc3QgcGllY2VzIGZvciBhbnkgaG9tZS4gQXZhaWxhYmxlIGluIDMgZGlmZmVyZW50IGNvbG9ycywgeW91IGNhbiBlYXNpbHkgc2VsZWN0IHRoZSBiZXN0IG1hdGNoIGZvciB5b3VyIGhvbWUuICIsCiAgImFwcC5wcm9kdWN0LnRpdGxlIjogIk1pbmltYWwgU3RhbmQiLAogICJhcHAucmF0aW5nX3ZhbHVlIjogIjQuNSIsCiAgImFwcC5yZXZpZXdzIjogInt7Y291bnR9fSByZXZpZXdzIiwKICAiYXBwLnNpZ25faW4iOiAiU0lHTiBJTiIsCiAgImFwcC5zaWduaW4uZW1haWwiOiAiRW1haWwiLAogICJhcHAuc2lnbnVwIjogIlNJR04gVVAiLAogICJhcHAuc2lnbnVwLnBhc3N3b3JkIjogIlBhc3N3b3JkIiwKICAiYXBwLnNpZ251cC5wYXNzd29yZF9mb3Jnb3QiOiAiRm9yZ290IHBhc3N3b3JkPyIsCiAgImFwcC53ZWxjb21lIjogIkhlbGxvISIKfQ'
-          
-          # Construct the JSON payload
-          JSON_PAYLOAD=$(jq -n \
-            --arg data "$DATA" \
-            --argjson replace_modified true \
-            --argjson tags '["auto-updated"]' \
-            '{
-              files: [
-                {
-                  name: "en.json",
-                  data: $data,
-                  lang_iso: "en",
-                  replace_modified: $replace_modified,
-                  tags: $tags
-                }
-              ],
-              convert_placeholders: false
-            }')
-
-          # Make the API call
-          curl --request POST \
-            --url "https://api.lokalise.com/api2/projects/8924818166f90cfed9af35.66887635/files/upload" \
-            --header 'accept: application/json' \
-            --header 'content-type: application/json' \
-            --header "X-Api-Token: 919873230a09f13d63d67ab49874325072977cf9" \
-            --data "$JSON_PAYLOAD"
+          lokalise push \
+            --token 919873230a09f13d63d67ab49874325072977cf9 \  # Replace with your Lokalise API token
+            --project-id 8924818166f90cfed9af35.66887635 \  # Replace with your Lokalise project ID
+            --giacven/test-fun/en.json \  # Specify the path to your JSON file
+            --overwrite \
+            --lang-en  # Specify the language codes as needed
