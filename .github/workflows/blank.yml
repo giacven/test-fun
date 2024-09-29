@@ -1,0 +1,33 @@
+name: Push JSON to Lokalise
+
+on:
+  push:
+  workflow_dispatch
+    path:
+      - '**/*.json'  # Trigger on any changes to JSON files
+ 
+
+jobs:
+  push-to-lokalise:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'  # Specify the Node.js version
+
+      - name: Install Lokalise CLI
+        run: |
+          npm install -g lokalise-cli
+
+      - name: Push JSON file to Lokalise
+        run: |
+          lokalise push \
+            --token 919873230a09f13d63d67ab49874325072977cf9 \  # Replace with your Lokalise API token
+            --project-id 8924818166f90cfed9af35.66887635 \  # Replace with your Lokalise project ID
+            --giacven/test-fun/en.json \  # Specify the path to your JSON file
+            --overwrite \
+            --lang-en  # Specify the language codes as needed
