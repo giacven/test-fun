@@ -2,9 +2,10 @@ name: Push JSON to Lokalise
 
 on:
   push:
+   workflow_dispatch
     paths:
       - '**/*.json'  # Trigger on any changes to JSON files
-  workflow_dispatch
+ 
 
 jobs:
   push-to-lokalise:
