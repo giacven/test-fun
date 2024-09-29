@@ -19,9 +19,8 @@ jobs:
         with:
           node-version: '20'  # Specify the Node.js version
 
-      - name: Install Lokalise CLI
-        run: |
-          npm install -g lokalise-cli
+      - name: Lokalise CLI
+        run: curl -sfL https://raw.githubusercontent.com/lokalise/lokalise-cli-2-go/master/install.sh | sh
 
       - name: Push JSON file to Lokalise
         run: |
