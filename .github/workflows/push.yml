@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - "en.json"  # Trigger when this file is updated
+      - en.json  # Trigger when this file is updated
     branches:
       - main  # Only trigger on changes to the main branch
 
@@ -16,35 +16,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Validate API Token and Project ID
+      - name: Push JSON file to Lokalise
         run: |
-          if [ -z "${{ secrets.API_TOKEN }}" ]; then
+          # Set your API token and project ID here
+          API_TOKEN="919873230a09f13d63d67ab49874325072977cf9"
+          PROJECT_ID="8924818166f90cfed9af35.66887635"
+
+          # Check if the API Token and Project ID are set
+          if [ -z "$API_TOKEN" ]; then
             echo "Error: API Token is not set."
             exit 1
           fi
-          if [ -z "${{ secrets.PROJECT_ID }}" ]; then
+
+          if [ -z "$PROJECT_ID" ]; then
             echo "Error: Project ID is not set."
             exit 1
           fi
 
-      - name: Push JSON file to Lokalise
-        run: |
-          # Check if the file exists
-          if [ ! -f "en.json" ]; then
-            echo "Error: en.json file not found!"
-            exit 1
-          fi
+          # Make the API call to upload the JSON file
+          curl -v -X POST "https://api.lokalise.com/api2/projects/$PROJECT_ID/files/upload" \
+             -H "X-Api-Token: $API_TOKEN" \
+             -F "file=@en.json" \
+             -F 'data={"convert_placeholders": false, "replace_modified": true, "tags": ["auto-updated"]}'
 
-          # Send the POST request to upload the file
-          response=$(curl -s -o response.json -w "%{http_code}" -X POST "https://api.lokalise.com/api2/projects/${{ secrets.PROJECT_ID }}/files/upload" \
-            -H "X-Api-Token: ${{ secrets.API_TOKEN }}" \
-            -F "file=@en.json" \
-            -F 'data={"convert_placeholders": false, "replace_modified": true, "tags": ["auto-updated"]}')
-          
-          # Check the response code
-          if [[ "$response" -ne 200 ]]; then
-            echo "Error: Failed to upload en.json to Lokalise! Response code: $response"
-            cat response.json  # Output the response for debugging
+          # Check if the curl command was successful
+          if [[ $? -ne 0 ]]; then
+            echo "Error: Failed to upload en.json to Lokalise!"
             exit 1
           fi
           echo "Successfully uploaded en.json to Lokalise!"
