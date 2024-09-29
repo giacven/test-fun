@@ -30,20 +30,24 @@ jobs:
         # Base64 encode the content of the JSON file
         BASE64_DATA=$(base64 -w 0 $JSON_FILE_PATH)
 
-        # Create JSON payload with the replace option
+        # Create JSON payload with replace option included
         JSON_PAYLOAD=$(jq -n \
           --arg data "$BASE64_DATA" \
           --arg filename "en.json" \
           --arg lang_iso "en" \
-          --argjson replace true \
-          '{data: $data, filename: $filename, lang_iso: $lang_iso, replace: $replace}')
+          '{data: $data, filename: $filename, lang_iso: $lang_iso}')
 
-        # Use Lokalise API to upload the file and overwrite existing data
+        # Use Lokalise API to upload the file and overwrite modified keys
         curl -X POST \
           -H "X-Api-Token: $LOKALISE_API_TOKEN" \
           -H "accept: application/json" \
           -H "content-type: application/json" \
-          --data "$JSON_PAYLOAD" \
+          --data '{
+            "data": "'"$BASE64_DATA"'",
+            "filename": "en.json",
+            "lang_iso": "en",
+            "replace": true
+          }' \
           https://api.lokalise.com/api2/projects/$LOKALISE_PROJECT_ID/files/upload
 
         echo "File uploaded successfully to Lokalise!"
