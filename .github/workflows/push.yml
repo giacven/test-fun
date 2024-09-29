@@ -20,10 +20,10 @@ jobs:
         run: |
           # Define the data directly as a JSON string
           DATA='ewogICJhcHAuY2FydCI6ICJBZGQgdG8gY2FydCIsCiAgImFwcC5kZXNjcmliZSI6ICJUaGUgYmVzdCBwbGFjZSB0b2wgZGlzY29zZW50IHdvbmRlcmZ1bCBob3VzaWhvbGQgZnVybml0dXJlIHRvIG1ha2UgeW91ciBob21lIGJlYXV0aWZ1bCIuCiAgImFwcC5nZXRfc3RhcnRlZCI6ICJHZXQgU3RhcnRlZCIsCiAgImFwcC5ncmVldGluZyI6ICJXZWxjb21lIGJhY2siLAogICJhcHAuaGVhZGVyIjogIk1BS0UgeU9VUiBIS0xFQSBCRUFVVElGVUwiLAogICJhcHAuaGVhZGxpbmUiOiAiTUFLRSBZT1VSIEhPTUUgQkVBVVRJRlVMIiwKICAiYXBwLnByb2R1Y3QuZGVzY3JpcHRpb24iOiAiVGhpcyBzdGFuZCBpcyBtYWRlIG9mIG5hdHVyYWwgd29vZC4gVGhlIGRlc2lnbiBpcyB2ZXJ5IHNpbXBsZSBhbmQgbWluaW1hbC4gVGhpcyBpcyB0cnVseSBvbmUgb2YgdGhlIGJlc3QgcGllY2VzIGZvciBhbnkgaG9tZS4gQXZhaWxhYmxlIGluIDMgZGlmZmVyZW50IGNvbG9ycywgeW91IGNhbiBlYXNpbHkgc2VsZWN0IHRoZSBiZXN0IG1hdGNoIGZvciB5b3VyIGhvbWUuICIsCiAgImFwcC5wcm9kdWN0LnRpdGxlIjogIk1pbmltYWwgU3RhbmQiLAogICJhcHAucmF0aW5nX3ZhbHVlIjogIjQuNSIsCiAgImFwcC5yZXZpZXdzIjogInt7Y291bnR9fSByZXZpZXdzIiwKICAiYXBwLnNpZ25faW4iOiAiU0lHTiBJTiIsCiAgImFwcC5zaWduaW4uZW1haWwiOiAiRW1haWwiLAogICJhcHAuc2lnbnVwIjogIlNJR04gVVAiLAogICJhcHAuc2lnbnVwLnBhc3N3b3JkIjogIlBhc3N3b3JkIiwKICAiYXBwLnNpZ251cC5wYXNzd29yZF9mb3Jnb3QiOiAiRm9yZ290IHBhc3N3b3JkPyIsCiAgImFwcC53ZWxjb21lIjogIkhlbGxvISIKfQ'
-
+          
           # Construct the JSON payload
           JSON_PAYLOAD=$(jq -n \
-            --argjson data "$DATA" \
+            --arg data "$DATA" \
             --argjson replace_modified true \
             --argjson tags '["auto-updated"]' \
             '{
