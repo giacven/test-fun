@@ -29,8 +29,8 @@ jobs:
           
       - name: Push JSON file to Lokalise
         env:
-          LOKALISE_API_TOKEN: ${{ secrets.API_TOKEN }}  # Use secrets for API Token
-          LOKALISE_PROJECT_ID: ${{ secrets.PROJECT_ID }}  # Use secrets for Project ID
+          LOKALISE_API_TOKEN: ${{ secrets.LOKALISE_API_TOKEN }}  # Use secrets for API Token
+          LOKALISE_PROJECT_ID: ${{ secrets.LOKALISE_PROJECT_ID }}  # Use secrets for Project ID
         run: |
           # Check if the file exists
           if [ ! -f "en.json" ]; then
@@ -39,8 +39,8 @@ jobs:
           fi
 
           # Send the POST request to upload the file
-          curl -v -X POST "https://api.lokalise.com/api2/projects/${{ env.LOKALISE_PROJECT_ID }}/files/upload" \
-             -H "X-Api-Token: ${{ env.LOKALISE_API_TOKEN }}" \
+          curl -v -X POST "https://api.lokalise.com/api2/projects/${{ LOKALISE_PROJECT_ID }}/files/upload" \
+             -H "X-Api-Token: ${{ LOKALISE_API_TOKEN }}" \
              -F "file=@en.json" \
              -F 'data={"convert_placeholders": false, "replace_modified": true, "tags": ["auto-updated"]}'
           
