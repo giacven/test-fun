@@ -15,8 +15,15 @@ jobs:
 
       - name: Download Lokalise CLI
         run: |
-          curl -O https://github.com/lokalise/lokalise-cli-2-go/releases/download/v2.6.0/lokalise_2.6.0_linux_amd64.tar.gz
-          tar -xzf lokalise_2.6.0_linux_amd64.tar.gz
+          # Dynamically fetch the latest release tag
+          LOKALISE_CLI_VERSION=$(curl --silent "https://api.github.com/repos/lokalise/lokalise-cli-2-go/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+          echo "Downloading Lokalise CLI version: $LOKALISE_CLI_VERSION"
+
+          # Download the appropriate tarball for Linux
+          curl -L -o lokalise.tar.gz "https://github.com/lokalise/lokalise-cli-2-go/releases/download/$LOKALISE_CLI_VERSION/lokalise_${LOKALISE_CLI_VERSION}_linux_amd64.tar.gz"
+
+          # Extract and install
+          tar -xzf lokalise.tar.gz
           sudo mv lokalise /usr/local/bin/lokalise
 
       - name: Verify Lokalise CLI Installation
@@ -31,4 +38,3 @@ jobs:
             --file-path giacven/test-fun/en.json \  # Specify the path to your JSON file
             --overwrite \
             --lang-en  # Specify the language codes as needed
-
