@@ -46,7 +46,7 @@ jobs:
             "data": "'"$BASE64_DATA"'",
             "filename": "en.json",
             "lang_iso": "en",
-            "replace": true
+            "replace_modified": true
           }' \
           https://api.lokalise.com/api2/projects/$LOKALISE_PROJECT_ID/files/upload
 
