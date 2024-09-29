@@ -16,45 +16,35 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Verify JSON file exists
-        run: |
-          echo "Checking if en.json exists"
-          ls -al  # List files to ensure en.json is present
-
-      - name: Encode JSON file to Base64
-        id: encode
-        run: |
-          echo "Encoding en.json to Base64"
-          BASE64_CONTENT=$(base64 -w 0 en.json)  # Use -w 0 for no line wrapping
-          echo "BASE64_CONTENT=${BASE64_CONTENT}" >> $GITHUB_ENV  # Store in GitHub environment variable
-          echo "Base64 encoded content length: ${#BASE64_CONTENT}"  # Log length for debugging
-
       - name: Push JSON file to Lokalise
         run: |
-          echo "Uploading JSON file to Lokalise"
-          # Check if BASE64_CONTENT is set
-          if [ -z "$BASE64_CONTENT" ]; then
-            echo "Error: BASE64_CONTENT is empty."
-            exit 1
-          fi
+          # Encode the JSON file in Base64
+          BASE64_CONTENT=$(base64 -w 0 en.json)  # Use -w 0 for no line wrapping
+
+          # Construct the JSON payload
+          JSON_PAYLOAD=$(jq -n \
+            --arg name "en.json" \
+            --arg data "$BASE64_CONTENT" \
+            --arg lang_iso "en" \
+            --argjson replace_modified true \
+            --argjson tags '["auto-updated"]' \
+            '{
+              files: [
+                {
+                  name: $name,
+                  data: $data,
+                  lang_iso: $lang_iso,
+                  replace_modified: $replace_modified,
+                  tags: $tags
+                }
+              ],
+              convert_placeholders: false
+            }')
 
           # Make the API call
-          RESPONSE=$(curl --request POST \
-            --url https://api.lokalise.com/api2/projects/8924818166f90cfed9af35.66887635/files/upload \
+          curl --request POST \
+            --url "https://api.lokalise.com/api2/projects/8924818166f90cfed9af35.66887635/files/upload" \
             --header 'accept: application/json' \
             --header 'content-type: application/json' \
             --header "X-Api-Token: 919873230a09f13d63d67ab49874325072977cf9" \
-            --data '{
-              "files": [
-                {
-                  "name": "en.json",
-                  "data": "'"${BASE64_CONTENT}"'",  # Use the base64 content
-                  "lang_iso": "en",
-                  "replace_modified": true,
-                  "tags": ["auto-updated"]
-                }
-              ],
-              "convert_placeholders": false
-            }')
-          
-          echo "Response from Lokalise: ${RESPONSE}"  # Log the response from the API
+            --data "$JSON_PAYLOAD"
