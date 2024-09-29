@@ -18,31 +18,21 @@ jobs:
 
       - name: Push JSON file to Lokalise
         run: |
-          # Set your API token and project ID here
-          API_TOKEN="919873230a09f13d63d67ab49874325072977cf9"
-          PROJECT_ID="8924818166f90cfed9af35.66887635"
-
-          # Check if the API Token and Project ID are set
-          if [ -z "$API_TOKEN" ]; then
-            echo "Error: API Token is not set."
-            exit 1
-          fi
-
-          if [ -z "$PROJECT_ID" ]; then
-            echo "Error: Project ID is not set."
-            exit 1
-          fi
-
-          # Make the API call to upload the JSON file
-          curl -v -X POST "https://api.lokalise.com/api2/projects/$PROJECT_ID/files/upload" \
-             -H "X-Api-Token: $API_TOKEN" \
-             -F "file=@en.json" \
-             -F 'data={"convert_placeholders": false, "replace_modified": true, "tags": ["auto-updated"]}'
-
-          # Check if the curl command was successful
-          if [[ $? -ne 0 ]]; then
-            echo "Error: Failed to upload en.json to Lokalise!"
-            exit 1
-          fi
-          echo "Successfully uploaded en.json to Lokalise!"
-          echo "Response: $response"
+          BASE64_CONTENT=$(base64 -w 0 en.json)  # Use -w 0 for no line wrapping in base64 output
+          curl --request POST \
+            --url https://api.lokalise.com/api2/projects/8924818166f90cfed9af35.66887635/files/upload \
+            --header 'accept: application/json' \
+            --header 'content-type: application/json' \
+            --header "X-Api-Token: 919873230a09f13d63d67ab49874325072977cf9" \
+            --data '{
+              "files": [
+                {
+                  "name": "en.json",
+                  "data": "'"${BASE64_CONTENT}"'",
+                  "lang_iso": "en",
+                  "replace_modified": true,
+                  "tags": ["auto-updated"]
+                }
+              ],
+              "convert_placeholders": false
+            }'
