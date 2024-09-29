@@ -29,8 +29,8 @@ jobs:
           
       - name: Push JSON file to Lokalise
         env:
-          LOKALISE_API_TOKEN: ${{ secrets.API_TOKEN }}  # Use secrets for API Token
-          LOKALISE_PROJECT_ID: ${{ secrets.PROJECT_ID }}  # Use secrets for Project ID
+          LOKALISE_API_TOKEN: ${{ secrets.LOKALISE_API_TOKEN }}  # Use secrets for API Token
+          LOKALISE_PROJECT_ID: ${{ secrets.LOKALISE_PROJECT_ID }}  # Use secrets for Project ID
         run: |
           # Check if the file exists
           if [ ! -f "en.json" ]; then
