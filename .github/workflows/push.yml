@@ -3,7 +3,7 @@ name: Push JSON to Lokalise
 on:
   push:
    workflow_dispatch
-    paths:
+    path:
       - '**/*.json'  # Trigger on any changes to JSON files
  
 
