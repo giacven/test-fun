@@ -16,15 +16,33 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Check API Token and Project ID
+        run: |
+          if [ -z "${{ secrets.API_TOKEN }}" ]; then
+            echo "Error: API Token is not set."
+            exit 1
+          fi
+          if [ -z "${{ secrets.PROJECT_ID }}" ]; then
+            echo "Error: Project ID is not set."
+            exit 1
+          fi
+          
       - name: Push JSON file to Lokalise
         env:
           LOKALISE_API_TOKEN: ${{ secrets.API_TOKEN }}  # Use secrets for API Token
           LOKALISE_PROJECT_ID: ${{ secrets.PROJECT_ID }}  # Use secrets for Project ID
         run: |
+          # Check if the file exists
+          if [ ! -f "en.json" ]; then
+            echo "Error: en.json file not found!"
+            exit 1
+          fi
+
+          # Send the POST request to upload the file
           curl -v -X POST "https://api.lokalise.com/api2/projects/${{ env.LOKALISE_PROJECT_ID }}/files/upload" \
              -H "X-Api-Token: ${{ env.LOKALISE_API_TOKEN }}" \
              -F "file=@en.json" \
-             -F 'data={"convert_placeholders": false, "replace_modified": true, "tags": ["auto-updated"]}'  # Removed escape characters
+             -F 'data={"convert_placeholders": false, "replace_modified": true, "tags": ["auto-updated"]}'
           
           # Check if the curl command was successful
           if [[ $? -ne 0 ]]; then
